@@ -1,5 +1,3 @@
-var expect = require('expect.js');
-var io = require('socket.io-client');
 var ss = require('../');
 var parser = require('../lib/parser');
 var client = require('./support').client;
@@ -7,10 +5,10 @@ var client = require('./support').client;
 describe('socket.io-stream', function() {
 
   it('should expose values', function() {
-    expect(ss.Buffer).to.be(Buffer);
-    expect(ss.Socket).to.be.a('function');
-    expect(ss.IOStream).to.be.a('function');
-    expect(ss.forceBase64).to.be.a('boolean');
+    expect(ss.Buffer).toEqual(Buffer);
+    expect(ss.Socket).toBeInstanceOf('function');
+    expect(ss.IOStream).toBeInstanceOf('function');
+    expect(ss.forceBase64).toBeInstanceOf('boolean');
   });
 
   it('should always return a same instance for a socket', function() {

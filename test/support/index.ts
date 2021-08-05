@@ -1,22 +1,23 @@
-var io = require('socket.io-client');
-var ss = require('../../');
+import io, { Socket } from 'socket.io-client';
+// import {forceBase64} from '../../'
 
-exports.port = process.env.ZUUL_PORT || 4000;
+const port = process.env.ZUUL_PORT || 4000;
 
-var isBrowser = !!global.window;
-var defaultURI = isBrowser ? '' : 'http://localhost:' + exports.port;
+const isBrowser = !!global.window;
+const defaultURI = isBrowser ? '' : 'http://localhost:' + exports.port;
 
-if (io.version) {
-  ss.forceBase64 = true;
+let client: (uri: string, options: any) => Socket;
+if ((io as any).version) {
+  // forceBase64 = true;
 
-  var optionMap = {
+  const optionMap: any = {
     autoConnect: 'auto connect',
     forceNew: 'force new connection',
     reconnection: 'reconnect'
   };
 
   // 0.9.x
-  exports.client = function(uri, options) {
+  client = function(uri: string, options: any) {
     if ('object' === typeof uri) {
       options = uri;
       uri = null;
@@ -24,7 +25,7 @@ if (io.version) {
     uri = uri || defaultURI;
     options = options || {};
 
-    var _options = {
+    var _options: any = {
       'force new connection': true
     };
 
@@ -32,13 +33,13 @@ if (io.version) {
       _options[optionMap[key] || key] = options[key];
     }
 
-    return io.connect(uri, _options);
+    return io(uri, _options);
   };
 
 } else {
   // 1.x.x
 
-  exports.client = function(uri, options) {
+  client = function(uri: string, options: any) {
     if ('object' === typeof uri) {
       options = uri;
       uri = null;
@@ -46,7 +47,7 @@ if (io.version) {
     uri = uri || defaultURI;
     options = options || {};
 
-    var _options = {
+    var _options: any = {
       forceNew: true
     };
     for (var key in options) {
@@ -56,3 +57,4 @@ if (io.version) {
     return io(uri, _options);
   };
 }
+export {client, port}

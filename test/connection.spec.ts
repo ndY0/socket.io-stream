@@ -1,22 +1,20 @@
-var expect = require('expect.js');
-var Blob = require('blob');
-var ss = require('../');
+import ss, {createBlobReadStream, createStream, IOStream} from '../';
+// var ss = require('../');
 var support = require('./support');
 var client = support.client;
 
 describe('socket.io-stream', function() {
   this.timeout(70000);
-
   it('should send/receive a file', function(done) {
     var sums = [];
     var socket = client();
     socket.on('connect', function() {
-      var file = ss.createStream();
+      var file = createStream();
       ss(socket).emit('read', file, 'test/support/frog.jpg', function(sum) {
         check(sum);
       });
 
-      var checksum = ss.createStream();
+      var checksum = createStream();
       ss(socket).emit('checksum', checksum, function(sum) {
         check(sum);
       });
@@ -36,7 +34,7 @@ describe('socket.io-stream', function() {
   it('should send/receive data in flowing mode', function(done) {
     var socket = client();
     socket.on('connect', function() {
-      var stream = ss.createStream();
+      var stream = createStream();
       ss(socket)
         .emit('echo', stream, { hi: 1 })
         .on('echo', function(stream, obj) {
@@ -61,7 +59,7 @@ describe('socket.io-stream', function() {
   it('should send/receive data in paused mode', function(done) {
     var socket = client();
     socket.on('connect', function() {
-      var stream = ss.createStream();
+      var stream = createStream();
       ss(socket)
         .emit('echo', stream, { hi: 1 })
         .on('echo', function(stream, obj) {
@@ -89,7 +87,7 @@ describe('socket.io-stream', function() {
   it('should send/receive Buffer', function(done) {
     var socket = client();
     socket.on('connect', function() {
-      var stream = ss.createStream();
+      var stream = createStream();
       ss(socket)
         .emit('echo', stream)
         .on('echo', function(stream) {
@@ -116,7 +114,7 @@ describe('socket.io-stream', function() {
   it('should send/receive an object in object mode', function(done) {
     var socket = client();
     socket.on('connect', function() {
-      var stream = ss.createStream({ objectMode: true });
+      var stream = createStream({ objectMode: true });
       ss(socket)
         .emit('echo', stream)
         .on('echo', function(stream) {
@@ -142,10 +140,10 @@ describe('socket.io-stream', function() {
     var socket = client();
     socket.on('connect', function() {
       ss(socket)
-        .emit('echo', [ss.createStream(), ss.createStream()])
+        .emit('echo', [createStream(), createStream()])
         .on('echo', function(data) {
-          expect(data[0]).to.be.a(ss.IOStream);
-          expect(data[1]).to.be.a(ss.IOStream);
+          expect(data[0]).to.be.a(IOStream);
+          expect(data[1]).to.be.a(IOStream);
           socket.disconnect();
           done();
         });
@@ -157,12 +155,12 @@ describe('socket.io-stream', function() {
     socket.on('connect', function() {
       ss(socket)
         .emit('echo', {
-          foo: ss.createStream(),
-          bar: ss.createStream()
+          foo: createStream(),
+          bar: createStream()
         })
         .on('echo', function(data) {
-          expect(data.foo).to.be.a(ss.IOStream);
-          expect(data.bar).to.be.a(ss.IOStream);
+          expect(data.foo).to.be.a(IOStream);
+          expect(data.bar).to.be.a(IOStream);
           socket.disconnect();
           done();
         });
@@ -172,7 +170,7 @@ describe('socket.io-stream', function() {
   it('should send/receive data through a same stream', function(done) {
     var socket = client();
     socket.on('connect', function() {
-      var stream = ss.createStream({ allowHalfOpen: true });
+      var stream = createStream({ allowHalfOpen: true });
       ss(socket).emit('sendBack', stream);
       stream.write('foo');
       stream.write('bar');
@@ -192,8 +190,8 @@ describe('socket.io-stream', function() {
   it('should handle multiple streams', function(done) {
     var socket = client();
     socket.on('connect', function() {
-      var stream1 = ss.createStream();
-      var stream2 = ss.createStream();
+      var stream1 = createStream();
+      var stream2 = createStream();
       ss(socket).emit('multi', stream1, stream2);
       stream1.write('foo');
       stream1.write('bar');
@@ -213,7 +211,7 @@ describe('socket.io-stream', function() {
   it('should get a stream through ack', function(done) {
     var socket = client();
     socket.on('connect', function() {
-      var stream = ss.createStream();
+      var stream = createStream();
       ss(socket).emit('ack', stream, function(stream) {
         var data = '';
         stream.on('data', function(chunk) {
@@ -234,9 +232,9 @@ describe('socket.io-stream', function() {
   it('should get streams through ack as object and array', function(done) {
     var socket = client();
     socket.on('connect', function() {
-      ss(socket).emit('ack', [ss.createStream(), { foo: ss.createStream() }], function(data) {
-        expect(data[0]).to.be.a(ss.IOStream);
-        expect(data[1].foo).to.be.a(ss.IOStream);
+      ss(socket).emit('ack', [createStream(), { foo: createStream() }], function(data) {
+        expect(data[0]).to.be.a(IOStream);
+        expect(data[1].foo).to.be.a(IOStream);
         socket.disconnect();
         done();
       });
@@ -246,7 +244,7 @@ describe('socket.io-stream', function() {
   it('should send an error happened on the client', function(done) {
     var socket = client();
     socket.on('connect', function() {
-      var stream = ss.createStream();
+      var stream = createStream();
       ss(socket).emit('clientError', stream, function(msg) {
         expect(msg).to.equal('error on the client');
         done()
@@ -258,7 +256,7 @@ describe('socket.io-stream', function() {
   it('should receive an error happened on the server', function(done) {
     var socket = client();
     socket.on('connect', function() {
-      var stream = ss.createStream();
+      var stream = createStream();
       ss(socket).emit('serverError', stream, 'error on the server');
       stream.on('error', function(err) {
         expect(err.message).to.equal('error on the server');
@@ -272,7 +270,7 @@ describe('socket.io-stream', function() {
       it('should read blob', function(done) {
         var socket = client();
         socket.on('connect', function() {
-          var stream = ss.createStream();
+          var stream = createStream();
           ss(socket)
             .emit('echo', stream)
             .on('echo', function(stream) {
@@ -285,7 +283,7 @@ describe('socket.io-stream', function() {
                 done();
               });
             });
-          ss.createBlobReadStream(new Blob(['foo', 'bar'])).pipe(stream);
+          createBlobReadStream(new Blob(['foo', 'bar'])).pipe(stream);
         });
       });
     });

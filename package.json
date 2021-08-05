@@ -1,6 +1,6 @@
 {
   "name": "socket.io-stream",
-  "version": "0.9.1",
+  "version": "1.0.0",
   "description": "stream for socket.io",
   "author": "Naoyuki Kanezawa <naoyuki.kanezawa@gmail.com>",
   "contributors": [
@@ -11,6 +11,10 @@
     {
       "name": "Aaron O'Mullan",
       "email": "aaron.omullan@friendco.de"
+    },
+    {
+      "name": "Andy Crépin",
+      "email": "andycrepin91@gmail.com"
     }
   ],
   "keywords": [
@@ -30,17 +34,30 @@
     "test": "make test"
   },
   "dependencies": {
-    "component-bind": "~1.0.0",
-    "debug": "~2.2.0"
+    "save-dev": "*",
+    "tsify": "^5.0.4",
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
-    "blob": "0.0.4",
-    "browserify": "~13.1.0",
-    "expect.js": "~0.3.1",
-    "mocha": "~3.0.2",
-    "socket.io": "~1.4.8",
-    "socket.io-client": "~1.4.8",
-    "zuul": "~3.11.1",
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.4.12",
+    "@types/socket.io-client": "^3.0.0",
+    "@types/uuid": "^8.3.1",
+    "blob": "~0.1.0",
+    "browserify": "~17.0.0",
+    "jest": "^27.0.6",
+    "mocha": "~9.0.3",
+    "socket.io": "~4.1.0",
+    "socket.io-client": "~4.1.0",
+    "ts-jest": "^27.0.4",
+    "typescript": "^4.3.5",
+    "zuul": "~3.12.0",
     "zuul-ngrok": "~4.0.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx"
+    ]
   }
 }

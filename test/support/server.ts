@@ -1,8 +1,7 @@
-var fs = require('fs');
-var util = require('util');
-var io = require('socket.io');
+import {createReadStream} from 'fs';
+import * as io from 'socket.io';
+
 var Checksum = require('./checksum');
-var crypto = require('crypto');
 var ss = require('../../');
 var support = require('./');
 
@@ -19,7 +18,7 @@ if (io.version) {
 server.on('connection', function(socket) {
 
   ss(socket).on('read', function(stream, path, callback) {
-    var file = fs.createReadStream(__dirname + '/../../' + path);
+    var file = createReadStream(__dirname + '/../../' + path);
     var checksum = new Checksum();
     file.pipe(checksum).pipe(stream).on('finish', function() {
       callback(checksum.digest());

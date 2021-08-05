@@ -1,37 +1,15 @@
-var Socket = require('./socket');
-var IOStream = require('./iostream');
-var BlobReadStream = require('./blob-read-stream');
-
-
-exports = module.exports = lookup;
-
-/**
- * Expose Node Buffer for browser.
- *
- * @api public
- */
-exports.Buffer = Buffer;
-
-/**
- * Expose Socket constructor.
- *
- * @api public
- */
-exports.Socket = Socket;
-
-/**
- * Expose IOStream constructor.
- *
- * @api public
- */
-exports.IOStream = IOStream;
+import { IOStream } from "./iostream";
+import { Socket as IOSocket } from "socket.io-client"
+import { Socket } from "./socket";
+import { DuplexOptions, ReadableOptions } from "stream";
+import { BlobReadStream } from "./blob-read-stream";
 
 /**
  * Forces base 64 encoding when emitting. Must be set to true for Socket.IO v0.9 or lower.
  *
  * @api public
  */
-exports.forceBase64 = false;
+const forceBase64 = false;
 
 /**
  * Look up an existing Socket.
@@ -41,16 +19,16 @@ exports.forceBase64 = false;
  * @return {Socket} Socket instance
  * @api public
  */
-function lookup(sio, options) {
+function lookup(sio: IOSocket, options: {forceBase64?: boolean} = {}) {
   options = options || {};
   if (null == options.forceBase64) {
     options.forceBase64 = exports.forceBase64;
   }
 
-  if (!sio._streamSocket) {
-    sio._streamSocket = new Socket(sio, options);
+  if (!(sio as any)._streamSocket) {
+    (sio as any)._streamSocket = new Socket(sio, options);
   }
-  return sio._streamSocket;
+  return (sio as any)._streamSocket;
 }
 
 /**
@@ -60,7 +38,7 @@ function lookup(sio, options) {
  * @return {IOStream} duplex stream
  * @api public
  */
-exports.createStream = function(options) {
+const createStream = function(options?: DuplexOptions) {
   return new IOStream(options);
 };
 
@@ -72,6 +50,9 @@ exports.createStream = function(options) {
  * @return {BlobReadStream} stream
  * @api public
  */
-exports.createBlobReadStream = function(blob, options) {
+const createBlobReadStream = function(blob: Blob, options?: ReadableOptions & {synchronous?: boolean}) {
   return new BlobReadStream(blob, options);
 };
+
+export default lookup;
+export { createBlobReadStream, forceBase64, Socket, IOStream, Buffer, createStream }
